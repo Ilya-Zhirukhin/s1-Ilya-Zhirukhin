@@ -39,3 +39,14 @@ class LoginForm(FlaskForm):  # Form objects for the front-end devs
                              validators=[DataRequired()])
     remember = BooleanField("Remember Me")
     submit = SubmitField('Log In')
+
+
+class EditProfileForm(FlaskForm):
+    first_name = StringField('Имя', validators=[DataRequired()])
+    last_name = StringField('Фамилия', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Сохранить изменения')
+
+
+class DeleteProfileForm(FlaskForm):
+    submit = SubmitField('Удалить профиль')
