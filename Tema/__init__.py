@@ -11,7 +11,7 @@ import eventlet
 
 eventlet.monkey_patch()
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__, template_folder="templates", static_url_path='/static')
 app.config['SECRET_KEY'] = 'R\x1a^-\x14?mq\x1ce\xf7\xefi\xb7\x0e\xa0\x02\x0c\xd6-$\x033\xc4'
 app.config['IMAGE_UPLOADS'] = join(dirname(realpath(__file__)), 'static/imgs/')
 app.config['FILE_UPLOADS'] = join(dirname(realpath(__file__)), 'static/submissions/')
@@ -32,9 +32,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # modules import
-from classroom_manager.routes import *
-from classroom_manager.models import User
-from classroom_manager.network import *
+from Tema.routes import *
+from Tema.models import User
+from Tema.network import *
 
 with app.app_context():
     db.create_all()

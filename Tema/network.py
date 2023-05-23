@@ -28,3 +28,10 @@ def handle_disconnections():
     if not current_user.is_authenticated:
         disconnect()
         return redirect(url_for('login'))
+
+#
+# @socketio.on('code_regeneration_req')
+# def regenerate_code(data):
+#     Classroom.query.filter(Classroom.id==data['classroom_id']).first().code=generate_code(data['classroom_id'])
+#     db.session.commit()
+#     emit('code_regeneration', {'classroom_id': data['classroom_id'], 'code':Classroom.query.filter(Classroom.id==data['classroom_id']).first().code})
