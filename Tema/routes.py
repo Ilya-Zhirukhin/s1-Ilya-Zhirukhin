@@ -321,3 +321,26 @@ def delete_profile():
     db.session.commit()
     response = {'success': True, 'message': 'Профиль успешно удален'}
     return jsonify(response)
+
+
+@app.route('/app/chats', methods=['POST'])
+def app_chats():
+    # создается множество users, в котором будут храниться идентификаторы пользователей, связанные с сообщениями.
+    # Создается пустой список contacts, который будет содержать информацию о контактах.
+    # Выполняется запрос к базе данных, чтобы получить все сообщения, связанные с текущим пользователем (current_user.get_id()). Результат сохраняется в переменной messages.
+    # Для каждого сообщения в messages проверяется, является ли идентификатор отправителя или получателя текущим пользователем. Если нет, то идентификатор добавляется в множество users.
+    # Выполняется запрос к базе данных для получения информации о пользователях, идентификаторы которых находятся в множестве users. Результат сохраняется в переменной User.query.filter(User.id.in_(users)).all().
+    # Для каждого пользователя создается объект contact с атрибутами id и name, которые соответствуют идентификатору пользователя и его имени соответственно. Объект contact добавляется в список contacts.
+    # Возвращается результат вызова функции render_template, которая отображает шаблон chats.html с переданными аргументами title='Contacts', data=contacts и type='contact'.
+
+    users, contacts = set(), []
+    messages = DirectMessage.query.filter(
+        (DirectMessage.receiver_id == current_user.get_id()) | (DirectMessage.sender_id == current_user.get_id())).all()
+    [users.add(message.receiver_id) if int(message.receiver_id) != int(current_user.get_id()) else users.add(
+        int(message.sender_id)) for message in messages]
+    for user in User.query.filter(User.id.in_(users)).all():
+        contact = SimpleNamespace()
+        contact.id = user.id
+        contact.name = user.username
+        contacts.append(contact)
+    return render_template('chats.html', title='Contacts', data=contacts, type='contact')
