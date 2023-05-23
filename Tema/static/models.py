@@ -51,3 +51,15 @@ class Membership(db.Model):
 
     def __repr__(self):
         return f"Membership(user_id: '{self.user_id}', classroom_id: '{self.classroom_id}')"
+
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    channel_id = db.Column(db.Integer, db.ForeignKey('channel.id'), nullable=False)
+    contents = db.Column(db.String(100), nullable=False)
+    ischild = db.Column(db.Integer, default=-1, nullable=False)  # if this is set to -1 then this message is not a reply
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"Message(author_id: '{self.author_id}', classroom: '{self.classroom}')"
