@@ -63,3 +63,15 @@ class Message(db.Model):
 
     def __repr__(self):
         return f"Message(author_id: '{self.author_id}', classroom: '{self.classroom}')"
+
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    channel_id = db.Column(db.Integer, db.ForeignKey('channel.id'), nullable=False)
+    title = db.Column(db.String(32), nullable=False)
+    note_text = db.Column(db.String(300), nullable=False)
+    note_imgs = db.Column(db.String(52), nullable=True)
+
+    def __repr__(self):
+        return f"Note(author_id: '{self.author_id}', classroom: '{self.classroom}')"
