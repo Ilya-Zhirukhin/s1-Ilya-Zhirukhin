@@ -38,3 +38,16 @@ class Classroom(db.Model):
 
     def __repr__(self):
         return f"Classroom(name: '{self.name}', class_img: '{self.image_file}'"
+
+
+class Membership(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    classroom_id = db.Column(db.Integer, db.ForeignKey('classroom.id'), nullable=False)
+    role = db.Column(db.String(7), nullable=False)
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint(user_id, classroom_id),  # Allows two primary keys
+    )
+
+    def __repr__(self):
+        return f"Membership(user_id: '{self.user_id}', classroom_id: '{self.classroom_id}')"
