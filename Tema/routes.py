@@ -167,3 +167,9 @@ def upload():
 @login_required
 def user_profile():
     return render_template('profile.html', title='Профиль', user=current_user)
+
+
+@app.route("/app")
+@login_required
+def __app__():
+    return render_template("app.html", title='Application')
