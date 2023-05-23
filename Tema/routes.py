@@ -150,7 +150,7 @@ def upload():
     if file:
         # Генерируем уникальное имя файла
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file.save(os.path.join(app.config['IMAGE_UPLOADS'], filename))
 
         # Обновляем поле image_file у пользователя
         current_user.image_file = filename
@@ -172,4 +172,32 @@ def user_profile():
 @app.route("/app")
 @login_required
 def __app__():
-    return render_template("app.html", title='Application')
+    return render_template("app.html", title='Application', user=current_user)
+
+
+@app.route("/edit-profile", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Профиль успешно обновлен', 'success')
+        return redirect(url_for('user_profile'))
+    elif request.method == 'GET':
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.email.data = current_user.email
+    return render_template('edit_profile.html', form=form)
+
+
+@app.route("/delete-profile", methods=["POST"])
+@login_required
+def delete_profile():
+    # Additional logic for profile deletion, e.g., deleting related data
+    db.session.delete(current_user)
+    db.session.commit()
+    response = {'success': True, 'message': 'Профиль успешно удален'}
+    return jsonify(response)

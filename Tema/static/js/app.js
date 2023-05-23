@@ -46,7 +46,7 @@
 
 
 // Установка масштаба страницы
-document.body.style.zoom = 0.8;
+document.body.style.zoom = 1;
 
 // Получение элементов страницы
 const app_container = $('#app_container');

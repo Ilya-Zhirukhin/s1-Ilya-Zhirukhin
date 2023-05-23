@@ -13,10 +13,10 @@
 }
 
 .sidebar {
-	margin-top: 10px;
-	width: 7.2em;
+	margin-top: 20px;
+	width: 8em;
 	color: #7ca0dc;
-	font-size: 10px;
+	font-size: 20px;
 	text-align: center;
 	background-color: rgb(71, 126, 222);
 	display: block;
@@ -24,13 +24,13 @@
 
 #app_container {
 	margin: 4px;
-	margin-left: 4.8em;
+	margin-left: 8em;
 	padding-top: 0.6em;
 	display: block;
 }
 
 #sidebartitle {
-	margin-left: 0.8em;
+	margin-left: 2em;
 }
 
 #app_body {
@@ -40,7 +40,7 @@
 
 .w3-sidebar {
 	display: block;
-	margin-right: 10px;
+	margin-right: 100px;
 }
 
 .w3-button {
