@@ -110,3 +110,13 @@ class DirectMessage(db.Model):
 
     def __repr__(self):
         return f"Message(author_id: '{self.sender_id}')"
+
+
+class AssignmentSubmission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
+    file_location = db.Column(db.String(52), nullable=True)
+
+    def __repr__(self):
+        return f'submission({id})'
