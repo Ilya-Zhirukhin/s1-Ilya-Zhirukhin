@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
 from Tema import login_manager, db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @login_manager.user_loader
@@ -24,6 +25,12 @@ class User(db.Model, UserMixin):
     messages = db.relationship('Message', backref='author', lazy=True)
     membership = db.relationship('Membership', backref='classroom', lazy=True)
     submission = db.relationship('AssignmentSubmission', backref='submission', lazy=True)
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
     def __repr__(self):
         return f"User(username: '{self.username}', email: '{self.email}', profile_img: '{self.image_file}')"

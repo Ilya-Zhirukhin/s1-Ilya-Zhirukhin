@@ -41,6 +41,16 @@ class LoginForm(FlaskForm):  # Form objects for the front-end devs
     submit = SubmitField('Log In')
 
 
+class ResetPasswordForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Сбросить пароль')
+
+
+class ResetPasswordForm_2(FlaskForm):
+    password = PasswordField('Новый пароль', validators=[DataRequired()])
+    submit = SubmitField('Сбросить пароль')
+
+
 class EditProfileForm(FlaskForm):
     first_name = StringField('Имя', validators=[DataRequired()])
     last_name = StringField('Фамилия', validators=[DataRequired()])

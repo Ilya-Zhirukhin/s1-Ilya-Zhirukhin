@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
-from Tema.forms import RegistrationForm, LoginForm, EditProfileForm, DeleteProfileForm
+from Tema.forms import RegistrationForm, LoginForm, EditProfileForm, DeleteProfileForm, ResetPasswordForm, \
+    ResetPasswordForm_2
 from Tema import app, bcrypt, db, socketio
 from Tema.models import User, Classroom, Membership, Channel, Message, Note, Assignment, DirectMessage, \
     AssignmentSubmission
@@ -13,6 +14,21 @@ from flask import session, make_response, g, abort, session, redirect, request, 
 from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.consumer import oauth_authorized
 from flask_oauthlib.client import OAuth
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
+
+app.config['MAIL_SERVER'] = 'smtp.mail.ru'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'for_semestr_work@mail.ru'
+app.config['MAIL_PASSWORD'] = '4UyJ8bda8KgvyC27xZAi'
+# RZHI1u1taet^
+app.config['MAIL_DEFAULT_SENDER'] = 'for_semestr_work@mail.ru'
+app.config['MAIL_USE_MANAGEMENT_COMMANDS'] = True  # Включение поддержки асинхронной отправки
+
+mail = Mail(app)
+serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 
 @app.route("/")
@@ -51,12 +67,50 @@ def login():
             flash('Successfully logged in!', 'success')
             return redirect(next_page) if next_page else redirect(url_for('__app__'))
         else:
-            flash('Login unsuccessful, please try again.', 'danger')
+            flash('Login unsuccessful, please try again.', 'error')
 
     # Create GitHub OAuth URL for login with GitHub
     github_login_url = url_for('login_github')
 
     return render_template('login.html', form=form, title='Login', github_login_url=github_login_url)
+
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = serializer.dumps(email, salt='reset-password')
+            reset_link = url_for('confirm_reset_password', token=token, _external=True)
+            message = Message('Сброс пароля', recipients=[email])
+            message.body = f'Для сброса пароля пройдите по ссылке: {reset_link}'
+            mail.send(message)  # Отправка асинхронного письма
+            flash('Инструкции по сбросу пароля были отправлены на вашу почту.', 'info')
+            return redirect(url_for('login'))
+        flash('Адрес электронной почты не найден.', 'error')
+    return render_template('reset_password.html', form=form, title='Сброс пароля')
+
+
+@app.route('/confirm_reset_password/<token>', methods=['GET', 'POST'])
+def confirm_reset_password(token):
+    form = ResetPasswordForm_2()
+    if form.validate_on_submit():
+        email = serializer.loads(token, salt='reset-password', max_age=3600)
+        user = User.query.filter_by(email=email).first()
+        if user:
+            # Обновление пароля пользователя
+            user.password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")  # Hash the password
+
+            db.session.commit()
+            flash('Пароль успешно изменен.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Пользователь не найден.', 'error')
+            return redirect(url_for('login'))
+
+    return render_template('confirm_reset_password.html', form=form, token=token, title='Подтверждение сброса пароля')
 
 
 @app.route("/logout")

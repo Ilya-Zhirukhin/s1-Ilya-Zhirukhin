@@ -17,3 +17,5 @@ Flask-Dance[github]
 blinker
 Flask-OAuthlib
 eventlet
+Flask-Mail
+celery

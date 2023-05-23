@@ -53,8 +53,28 @@
         background-color: #555;
     }
 
-</style>
+    .flash {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
 
+    .flash.error {
+        background-color: #c95f5f; /* Красный цвет для сообщений с категорией "error" */
+        color: #ffffff; /* Белый цвет текста для лучшей читаемости */
+    }
+
+    .flash.success {
+        background-color: #5ace5a; /* Зеленый цвет для других сообщений */
+        color: #fffefe; /* Черный цвет текста */
+    }
+
+
+</style>
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{ cat }}">{{ msg }}</div>
+{% endfor %}
 
 <div class='content-section'>
     <div class='container'>
@@ -88,7 +108,7 @@
                         <div class='form-group'>
                             {{ form.submit(class="btn btn-outline-info") }}
                         </div>
-                        <!-- Add this code after the login form -->
+                        <a href="{{ url_for('reset_password') }}">Забыли пароль?</a>
                         <!-- Add this code after the login form -->
                         <div>
                             <a href="{{ github_login_url }}" class="btn btn-primary">Login with GitHub</a>
