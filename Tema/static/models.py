@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from classroom_manager import login_manager, db
 from flask_login import UserMixin
 from datetime import datetime
+from Tema import login_manager, db
 
 
 @login_manager.user_loader
