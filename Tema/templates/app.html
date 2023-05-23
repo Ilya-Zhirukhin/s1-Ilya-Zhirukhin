@@ -4,8 +4,8 @@
 <style>
 
     .profile-avatar img {
-        width: 100px;
-        height: 100px;
+        width: 60px;
+        height: 60px;
         object-fit: cover; /* Подгоняет изображение в соответствии с заданными размерами */
         border-radius: 50%; /* Опционально: добавляет закругленные углы для круглого аватара */
     }
@@ -55,13 +55,13 @@
 
 
 <div class="sidebar w3-sidebar w3-bar-block w3-animate-left" id="mySidebar">
-    <a class="w3-bar-item w3-button selected_item" name='activity' id=activity><img width=75 height=75
+    <a class="w3-bar-item w3-button selected_item" name='activity' id=activity><img width=50 height=50
                                                                                     src="{{url_for('static', filename='imgs/notification-icon.png')}}"/>Activity</a>
-    <a class="w3-bar-item w3-button" name='chats' id=chats><img width=75 height=75
+    <a class="w3-bar-item w3-button" name='chats' id=chats><img width=50 height=50
                                                                 src="{{url_for('static', filename='imgs/chat-icon.png')}}"/>Chat</a>
-    <a class="w3-bar-item w3-button" name='classrooms' id=classrooms><img width=75 height=75
+    <a class="w3-bar-item w3-button" name='classrooms' id=classrooms><img width=50 height=50
                                                                           src="{{url_for('static', filename='imgs/connection.gif')}}"/>Rooms</a>
-    <a class="w3-bar-item w3-button" name=meetings id=meetings><img width=75 height=75
+    <a class="w3-bar-item w3-button" name=meetings id=meetings><img width=50 height=50
                                                                     src="{{url_for('static', filename='imgs/meetings-icon_2.png')}}"/>Meetings</a>
 </div>
 <!--Page content-->

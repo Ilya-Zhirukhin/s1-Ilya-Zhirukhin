@@ -23,18 +23,18 @@
 }
 
 #app_container {
-	margin: 4px;
-	margin-left: 8em;
-	padding-top: 0.6em;
+	margin: 10px;
+	margin-left: 10em;
+	padding-top: 2em;
 	display: block;
 }
 
 #sidebartitle {
-	margin-left: 2em;
+	margin-left: 10em;
 }
 
 #app_body {
-	margin-left: 18%;
+	margin-left: 40%;
 	display: block;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .channel_display {
-	margin-left: 10px;
+	margin-left: 50px;
 	display: block;
 }
 
@@ -77,12 +77,12 @@
 }
 
 .tab-content {
-	width: 100%;
+	width: 80%;
 }
 
 .channel_display h4 {
-	min-width: 100px;
-	width: 700px;
+	min-width: 80px;
+	width: 400px;
 	border-radius: 5px;
 	margin-top: 0.6em;
 	margin-bottom: 0.3em;
@@ -99,7 +99,7 @@
 
 .my_second_sidebar {
 	min-width: 100px;
-	width: 14%;
+	width: 40%;
 }
 
 .textinput {
@@ -117,8 +117,8 @@
 }
 
 .upper_part {
-	font-size: 18px;
-	margin-top: 2px;
+	font-size: 30px;
+	margin-top: 10px;
 }
 
 .fas {
