@@ -75,3 +75,15 @@ class Note(db.Model):
 
     def __repr__(self):
         return f"Note(author_id: '{self.author_id}', classroom: '{self.classroom}')"
+
+
+class Assignment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    channel_id = db.Column(db.Integer, db.ForeignKey('channel.id'), nullable=False)
+    assignment_text = db.Column(db.String(200), nullable=False)
+    due_date = db.Column(db.DateTime, nullable=False)
+    submission = db.relationship('AssignmentSubmission', backref='assignment', lazy=True)
+
+    def __repr__(self):
+        return f"Assignment(author_id: '{self.author_id}', classroom: '{self.classroom}')"
