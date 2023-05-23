@@ -26,3 +26,15 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User(username: '{self.username}', email: '{self.email}', profile_img: '{self.image_file}')"
+
+
+class Classroom(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(60), nullable=True)
+    image_file = db.Column(db.String(42), nullable=False, default="default_class.png")
+    name = db.Column(db.String(25), nullable=False)
+    description = db.Column(db.String(262), nullable=True)
+    membership = db.relationship('Membership', backref='membership', lazy=True)
+
+    def __repr__(self):
+        return f"Classroom(name: '{self.name}', class_img: '{self.image_file}'"
