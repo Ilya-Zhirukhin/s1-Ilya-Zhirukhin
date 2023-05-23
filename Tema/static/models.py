@@ -9,6 +9,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(25), nullable=False)
@@ -120,3 +121,23 @@ class AssignmentSubmission(db.Model):
 
     def __repr__(self):
         return f'submission({id})'
+
+# O2O ---  модель User имеет связь One-to-One с моделями Note и AssignmentSubmission
+# через внешние ключи author_id. Каждая запись User может быть связана
+# с одной записью Note и одной записью AssignmentSubmission.
+
+
+# O2M ---  модели User, Classroom, Message, Note, Assignment,
+# и Channel имеют связь One-to-Many с другими моделями через внешние ключи.
+# Например, у модели User есть связь One-to-Many с моделями Note, Assignment,
+# и Message, так как у каждого пользователя может быть несколько заметок, заданий и сообщений.
+
+# M2M --- модель Membership представляет связь Many-to-Many между моделями
+# User и Classroom. Она имеет два внешних ключа: user_id и classroom_id,
+# что позволяет иметь множество записей в таблице Membership, связывающих р
+# азных пользователей с разными классами.
+
+# M2O --- модели Membership, Message, Note, Assignment, и AssignmentSubmission
+# имеют связь Many-to-One с другими моделями. Например, у модели Membership
+# есть связь Many-to-One с моделями User и Classroom, так как множество
+# записей в таблице Membership могут ссылаться на одного пользователя и один класс.
