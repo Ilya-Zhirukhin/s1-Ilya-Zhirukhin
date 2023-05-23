@@ -1,10 +1,10 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
-from classroom_manager.forms import RegistrationForm, LoginForm, EditProfileForm, DeleteProfileForm
-from classroom_manager import app, bcrypt, db, socketio
-from classroom_manager.models import User, Classroom, Membership, Channel, Message, Note, Assignment, DirectMessage, \
+from Tema.forms import RegistrationForm, LoginForm, EditProfileForm, DeleteProfileForm
+from Tema import app, bcrypt, db, socketio
+from Tema.models import User, Classroom, Membership, Channel, Message, Note, Assignment, DirectMessage, \
     AssignmentSubmission
 from flask_login import login_user, current_user, logout_user, login_required
-from classroom_manager.utils import generate_code
+# from Tema.utils import generate_code
 from werkzeug.utils import secure_filename
 from types import SimpleNamespace
 from dateutil import parser
