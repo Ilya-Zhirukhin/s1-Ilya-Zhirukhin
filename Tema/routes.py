@@ -386,3 +386,10 @@ def retrieve_directmessages(user_id):
             for message in messages
         ]
     })
+
+
+@app.route('/app/classrooms', methods=['POST'])
+def app_classrooms():
+    memberships = Membership.query.filter(Membership.user_id == current_user.get_id()).all()
+    classrooms = Classroom.query.filter(Classroom.id.in_([membership.classroom_id for membership in memberships])).all()
+    return render_template('classrooms.html', title='Classrooms', data=classrooms, type='classroom')
