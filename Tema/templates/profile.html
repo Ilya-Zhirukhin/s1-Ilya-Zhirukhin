@@ -149,3 +149,127 @@
 
     </div>
 </div>
+
+<script>
+    // JavaScript код для обновления предварительного просмотра аватара при выборе файла
+    document.getElementById('profile-file-input').addEventListener('change', function (event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var img = document.getElementById('profile-avatar-img');
+            img.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    });
+</script>
+
+
+<script>
+    // Редактировать
+
+    // Редактировать
+    // Функция для отображения модального окна edit
+    function showModal() {
+        var modal = document.getElementById('edit-profile-modal');
+        modal.style.display = "block";
+        loadEditProfileForm(); // Загружаем содержимое формы редактирования профиля
+    }
+
+    // Функция для закрытия модального окна
+    function closeModal() {
+        var modal = document.getElementById('edit-profile-modal');
+        modal.style.display = "none";
+    }
+
+
+    // Функция для загрузки формы редактирования профиля
+    // loadEditProfileForm() для обработки ответа от сервери вставки содержимого формы в модальное окно:
+    function loadEditProfileForm() {
+        var editProfileContent = document.getElementById('edit-profile-content');
+        editProfileContent.innerHTML = ''; // Очищаем содержимое
+
+        // Загружаем содержимое формы редактирования профиля с помощью AJAX запроса
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '{{ url_for('
+        edit_profile
+        ') }}'
+    )
+        ;
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                editProfileContent.innerHTML = xhr.responseText;
+                initializeEditProfileForm(); // Инициализируем форму редактирования профиля
+            }
+        };
+        xhr.send();
+    }
+
+    // Функция для инициализации формы редактирования профиля
+    //initializeEditProfileForm(), которая будет обрабатывать отправку
+    // формы редактирования профиля и отправлять ее содержимое на сервер:
+    function initializeEditProfileForm() {
+        var editProfileForm = document.getElementById('edit-profile-form');
+        editProfileForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // Отменяем отправку формы по умолчанию
+
+            var formData = new FormData(editProfileForm); // Создаем объект FormData с данными формы
+
+            // Отправляем данные формы на сервер с помощью AJAX запроса
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{{ url_for('
+            edit_profile
+            ') }}'
+        )
+            ;
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.message === 'Профиль успешно обновлен') {
+                        closeModal(); // Закрываем модальное окно
+                        location.reload(); // Перезагружаем страницу профиля
+                    }
+                }
+            };
+            xhr.send(formData);
+        });
+    }
+
+
+</script>
+
+
+<script>
+    // JavaScript код для обработки нажатия кнопки "Удалить профиль"
+    document.getElementById('delete-profile-btn').addEventListener('click', function (event) {
+        event.preventDefault(); // Предотвращаем переход по ссылке
+
+        if (confirm('Вы действительно хотите удалить профиль?')) {
+            // Создаем новый AJAX-запрос
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{{ url_for('
+            delete_profile
+            ') }}', true
+        )
+            ;
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Обработка успешного ответа от сервера
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        // Профиль успешно удален, перенаправляем пользователя на страницу регистрации
+                        window.location.href = '{{ url_for('
+                        register
+                        ') }}';
+                    } else {
+                        // Произошла ошибка при удалении профиля, выводим сообщение об ошибке
+                        alert(response.message);
+                    }
+                }
+            };
+            xhr.send(); // Отправляем запрос на удаление профиля
+        }
+    });
+
+</script>
+
+{% endblock %}
