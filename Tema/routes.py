@@ -344,3 +344,45 @@ def app_chats():
         contact.name = user.username
         contacts.append(contact)
     return render_template('chats.html', title='Contacts', data=contacts, type='contact')
+
+
+@app.route('/add-contact', methods=['POST'])
+def add_contact():
+    contact = User.query.filter(User.username == request.form['username']).first()
+    if contact and int(contact.id) == int(current_user.get_id()):
+        contact = None  #
+    return jsonify({'name': contact.username, 'id': contact.id, 'img_url': url_for('static',
+                                                                                   filename='imgs/defaultuser-icon.png')}) if contact and contact.id != current_user.get_id() else jsonify(
+        {'error': 'user not found.'})
+
+
+@app.route('/retrieve-directmessages/<user_id>', methods=['POST'])
+def retrieve_directmessages(user_id):
+    # Обработчик принимает параметр user_id, который представляет идентификатор пользователя, с которым нужно извлечь директные сообщения.
+    # Выполняется запрос к базе данных для извлечения сообщений, удовлетворяющих следующим условиям:
+    # sender_id равен user_id, а receiver_id равен идентификатору текущего пользователя (current_user.get_id()).
+    # ИЛИ sender_id равен идентификатору текущего пользователя, а receiver_id равен user_id.
+    # Результат сохраняется в переменной messages.
+    # Создается словарь, содержащий ключ 'messages' и значение, которое представляет список словарей сообщений.
+    # Для каждого сообщения в messages создается словарь с ключами 'content', 'date', 'author' и 'mein', которые представляют содержимое сообщения, дату, имя автора и флаг, указывающий, является ли текущий пользователь автором сообщения.
+    # В словарь 'messages' добавляется созданный словарь для каждого сообщения в messages.
+    # Возвращается JSON-ответ с данными о сообщениях.
+    # Обработчик маршрута извлекает директные сообщения между заданным
+    # пользователем и текущим пользователем, и возвращает их в формате JSON.
+    # Каждое сообщение содержит информацию о содержимом, дате, авторе и флаге,
+    # указывающем, является ли текущий пользователь автором сообщения.
+    messages = DirectMessage.query.filter(
+        (DirectMessage.sender_id == user_id) & (DirectMessage.receiver_id == current_user.get_id()) |
+        (DirectMessage.sender_id == current_user.get_id()) & (DirectMessage.receiver_id == user_id)
+    )
+    return jsonify({
+        'messages': [
+            {
+                'content': message.content,
+                'date': message.date,
+                'author': User.query.filter(User.id == message.sender_id).first().username,
+                'mein': int(current_user.get_id()) == message.sender_id
+            }
+            for message in messages
+        ]
+    })
