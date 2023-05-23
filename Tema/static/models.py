@@ -87,3 +87,15 @@ class Assignment(db.Model):
 
     def __repr__(self):
         return f"Assignment(author_id: '{self.author_id}', classroom: '{self.classroom}')"
+
+
+class Channel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    classroom_id = db.Column(db.Integer, db.ForeignKey('classroom.id'), nullable=False)
+    name = db.Column(db.String(30), nullable=False)
+    message = db.relationship('Message', backref='mesage', lazy=True)
+    note = db.relationship('Note', backref='note', lazy=True)
+    assignment = db.relationship('Assignment', backref='assignment', lazy=True)
+
+    def __repr__(self):
+        return f"Channel(classroom: '{self.classroom_id}', name: '{self.name}')"
