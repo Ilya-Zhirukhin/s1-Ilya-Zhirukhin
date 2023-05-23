@@ -30,3 +30,12 @@ class RegistrationForm(FlaskForm):  # Form objects for the front-end devs
     def validate_email(self, email):
         if User.query.filter_by(email=email.data).first():  # Checks if a user with the same username is in the database
             raise ValidationError("That email is taken, please choose a different one.")
+
+
+class LoginForm(FlaskForm):  # Form objects for the front-end devs
+    email = StringField("Email",
+                        validators=[DataRequired(), Email()])
+    password = PasswordField("Password",
+                             validators=[DataRequired()])
+    remember = BooleanField("Remember Me")
+    submit = SubmitField('Log In')
