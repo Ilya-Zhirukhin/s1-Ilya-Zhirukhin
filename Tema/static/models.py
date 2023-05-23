@@ -99,3 +99,14 @@ class Channel(db.Model):
 
     def __repr__(self):
         return f"Channel(classroom: '{self.classroom_id}', name: '{self.name}')"
+
+
+class DirectMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, nullable=False)
+    receiver_id = db.Column(db.Integer, nullable=False)
+    content = db.Column(db.String(100), nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"Message(author_id: '{self.sender_id}')"
