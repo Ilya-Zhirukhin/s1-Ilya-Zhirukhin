@@ -19,3 +19,4 @@ Flask-OAuthlib
 eventlet
 Flask-Mail
 celery
+json

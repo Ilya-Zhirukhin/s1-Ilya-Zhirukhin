@@ -101,6 +101,9 @@
                             {% endfor %}
                             {% endif %}
                         </div>
+                        <a href="{{ url_for('reset_password') }}">Забыли пароль?</a>
+
+
                         <div class='form-group'>
                             {{ form.remember.label(class="form-control-label") }}
                             {{ form.remember }}
@@ -108,22 +111,19 @@
                         <div class='form-group'>
                             {{ form.submit(class="btn btn-outline-info") }}
                         </div>
-                        <a href="{{ url_for('reset_password') }}">Забыли пароль?</a>
+
                         <!-- Add this code after the login form -->
                         <div>
-                            <a href="{{ github_login_url }}" class="btn btn-primary">Login with GitHub</a>
-                        </div>
+                            <a href="{{ github_login_url }}">
+                                <img src="{{ url_for('static', filename='imgs/free-icon-github-536452.png') }}"
+                                     alt="Github" width="50" height="50">
+                            </a>
 
-
-                        {#
-                        <div>#}
-                            {##}
-                            {# <a href="{{ url_for('github.login') }}" class="btn btn-primary">Войти через GitHub</a>#}
-                            {##}
-                            {##}
-                            {#
+                            <a href="{{ url_for('login_yandex') }}">
+                                <img src="{{ url_for('static', filename='imgs/free-icon-yandex-5969001.png') }}"
+                                     alt="Yandex" width="50" height="50">
+                            </a>
                         </div>
-                        #}
 
                     </fieldset>
                 </form>

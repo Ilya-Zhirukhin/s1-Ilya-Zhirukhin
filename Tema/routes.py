@@ -17,6 +17,8 @@ from flask_oauthlib.client import OAuth
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 
+import json
+
 app.config['MAIL_SERVER'] = 'smtp.mail.ru'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
@@ -171,6 +173,70 @@ def github_authorized(resp):
 
     login_user(user)
     flash('Successfully logged in via Github!', 'success')
+    return redirect(url_for('user_profile'))
+
+
+yandex = oauth.remote_app(
+    'yandex',
+    consumer_key='86d4d51e635144e49df6fd48b5b64321',
+    consumer_secret='ed6c48bcac5f426891e47f666330f657',
+    request_token_params={'scope': 'login:email'},
+    base_url='https://login.yandex.com/info',
+    request_token_url=None,
+    access_token_method='POST',
+    access_token_url='https://oauth.yandex.com/token',
+    authorize_url='https://oauth.yandex.com/authorize'
+)
+
+
+@yandex.tokengetter
+def get_yandex_token():
+    return session.get('yandex_token')
+
+
+@app.route('/login/yandex')
+def login_yandex():
+    return yandex.authorize(callback=url_for('yandex_authorized', _external=True))
+
+
+@app.route('/login/yandex/callback')
+@yandex.authorized_handler
+def yandex_authorized(resp):
+    next_page = request.args.get('next') or url_for('home')
+    if resp is None:
+        flash('Authorization failed.', 'danger')
+        return redirect(next_page)
+
+    access_token = resp['access_token']
+    session['yandex_token'] = access_token
+
+    user_info_data = yandex.get('https://login.yandex.ru/info', headers={'Authorization': f'OAuth {access_token}'}).data
+
+    # Check response
+    if not user_info_data:
+        flash('Failed to fetch user data.', 'danger')
+        return redirect(next_page)
+
+    email = user_info_data['login'] + '@yandex.ru'
+
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        new_user = User(
+            first_name=user_info_data.get('first_name', ''),
+            last_name=user_info_data.get('last_name', ''),
+            username=user_info_data['login'],
+            email=email,
+            image_file=user_info_data.get('default_avatar_id', ''),
+            status='yandex',
+            password=access_token
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        user = new_user
+
+    login_user(user)
+    flash('Successfully logged in via Yandex!', 'success')
     return redirect(url_for('user_profile'))
 
 
