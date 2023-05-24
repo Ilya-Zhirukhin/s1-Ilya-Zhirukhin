@@ -24,17 +24,17 @@
 
 #app_container {
 	margin: 10px;
-	margin-left: 10em;
+	margin-left: 5em;
 	padding-top: 2em;
 	display: block;
 }
 
 #sidebartitle {
-	margin-left: 10em;
+	margin-left: 5em;
 }
 
 #app_body {
-	margin-left: 40%;
+	margin-left: 5%;
 	display: block;
 }
 
@@ -51,8 +51,9 @@
 	width: 100%;
 }
 
+
 .channel_display {
-	margin-left: 50px;
+	margin-left: 20px;
 	display: block;
 }
 
@@ -82,7 +83,7 @@
 
 .channel_display h4 {
 	min-width: 80px;
-	width: 400px;
+	width: 200px;
 	border-radius: 5px;
 	margin-top: 0.6em;
 	margin-bottom: 0.3em;
@@ -98,8 +99,8 @@
 }
 
 .my_second_sidebar {
-	min-width: 100px;
-	width: 40%;
+	min-width: 50px;
+	width: 10%;
 }
 
 .textinput {

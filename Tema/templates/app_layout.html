@@ -1,17 +1,18 @@
-<div class="w3-sidebar w3-bar-block my_second_sidebar" style='background-color: rgb(223, 231, 232); margin-top: 20px;'>
-  <div class='titlesection'>
-    <h4 id=sidebartitle>{{title}}</h4>
+<div class="w3-sidebar w3-bar-block my_second_sidebar"
+     style="background-color: rgb(223, 231, 232); margin-top: 50px; padding-left: 20px;">
+  <div class="titlesection" style='margin-left: 20px;'>
+    <h4 id="sidebartitle">{{title}}</h4>
   </div>
   <hr>
-  <div id=menulist>
+  <div id="menulist">
     {% for item in data %}
     <div>
-      <a class="w3-bar-item w3-button {{type}}" id="%{{item.id}}" style='text-decoration: none; width:100%'>{% if type
-        == 'classroom' %}<img src="{{url_for('static', filename='imgs/'+item.image_file)}}" width=20> {{item.name}}<i
-                class='fas fa-cog float-right'></i>{% endif %}</a>
+      <a class="w3-bar-item w3-button {{type}}" id="%{{item.id}}" style="text-decoration: none; width:60%">{% if type ==
+        'classroom' %}<img src="{{url_for('static', filename='imgs/'+item.image_file)}}" width="10"> {{item.name}}<i
+                class="fas fa-cog float-right"></i>{% endif %}</a>
       {% if type == 'classroom' %}
       <ul class="channels">
-        <!--Classroom channels goes here-->
+        <!--Classroom channels go here-->
       </ul>
       {% endif %}
     </div>
@@ -19,8 +20,7 @@
   </div>
 </div>
 
-<div id=app_body>
+<div id="app_body">
   {% block app %}{% endblock %}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.min.js"></script>
-
