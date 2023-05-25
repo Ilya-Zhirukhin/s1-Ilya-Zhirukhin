@@ -4,8 +4,8 @@
 <style>
 
     .profile-avatar img {
-        width: 60px;
-        height: 60px;
+        width: 40px;
+        height: 40px;
         object-fit: cover; /* Подгоняет изображение в соответствии с заданными размерами */
         border-radius: 50%; /* Опционально: добавляет закругленные углы для круглого аватара */
     }
@@ -18,50 +18,52 @@
     }
 </style>
 
+
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <a class="navbar-brand" href="{{url_for('home')}}">TEMA</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
-        <ul class="navbar-nav">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('logout')}}" style="margin-left: 20px;">Logout</a>
+                <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href='#' id='createteambtn' onClick='toggle_class_creator()'>Create a TIMA</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href='#' id='jointeambtn' onClick='toggle_class_join()'>Join a TIMA</a>
-            </li>
-        </ul>
-        <ul class="navbar-nav">
             <li class="nav-item">
-                <div class="profile-avatar">
-                    <a href="{{ url_for('user_profile') }}" style="color: #e0e0e0">ACCOUNT</a>
-                    <a href="{{ url_for('user_profile') }}">
-                        <img id="profile-avatar-img" src="{{ url_for('static', filename='imgs/' + user.image_file) }}"
-                             alt="Аватар">
-                    </a>
-                </div>
-            </li>
+                <ul class="navbar-nav">
+                    <li>
+                        <div class="profile-avatar">
+                            <a href="{{ url_for('user_profile') }}" style="color: #e0e0e0">ACCOUNT</a>
+                            <a href="{{ url_for('user_profile') }}">
+                                <img id="profile-avatar-img"
+                                     src="{{ url_for('static', filename='imgs/' + user.image_file) }}"
+                                     alt="Аватар">
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+
+
         </ul>
     </div>
 </nav>
-
-
 <!-- Sidebar -->
 
 
 <div class="sidebar w3-sidebar w3-bar-block w3-animate-left" id="mySidebar">
-    <a class="w3-bar-item w3-button selected_item" name='activity' id=activity><img width=50 height=50
+    <a class="w3-bar-item w3-button selected_item" name='activity' id=activity><img width=40
                                                                                     src="{{url_for('static', filename='imgs/notification-icon.png')}}"/>Activity</a>
-    <a class="w3-bar-item w3-button" name='chats' id=chats><img width=50 height=50
+    <a class="w3-bar-item w3-button" name='chats' id=chats><img width=40
                                                                 src="{{url_for('static', filename='imgs/chat-icon.png')}}"/>Chat</a>
-    <a class="w3-bar-item w3-button" name='classrooms' id=classrooms><img width=50 height=50
+    <a class="w3-bar-item w3-button" name='classrooms' id=classrooms><img width=40
                                                                           src="{{url_for('static', filename='imgs/connection.gif')}}"/>Rooms</a>
-    <a class="w3-bar-item w3-button" name=meetings id=meetings><img width=50 height=50
+    <a class="w3-bar-item w3-button" name=meetings id=meetings><img width=40
                                                                     src="{{url_for('static', filename='imgs/meetings-icon_2.png')}}"/>Meetings</a>
 </div>
 <!--Page content-->
