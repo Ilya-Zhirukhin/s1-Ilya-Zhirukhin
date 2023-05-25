@@ -2,8 +2,7 @@ from flask import Flask, render_template, url_for, flash, redirect, request, jso
 from Tema.forms import RegistrationForm, LoginForm, EditProfileForm, DeleteProfileForm, ResetPasswordForm, \
     ResetPasswordForm_2
 from Tema import app, bcrypt, db, socketio
-from Tema.models import User, Classroom, Membership, Channel, Message, Note, Assignment, DirectMessage, \
-    AssignmentSubmission
+
 from flask_login import login_user, current_user, logout_user, login_required
 from Tema.utils import generate_code
 from werkzeug.utils import secure_filename
@@ -12,12 +11,13 @@ from dateutil import parser
 import os
 from flask import session, make_response, g, abort, session, redirect, request, Flask, render_template, url_for, flash
 from flask_dance.contrib.github import make_github_blueprint, github
-from flask_dance.consumer import oauth_authorized
 from flask_oauthlib.client import OAuth
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 
-import json
+from flask import render_template
+from flask_login import current_user
+from Tema.models import *
 
 app.config['MAIL_SERVER'] = 'smtp.mail.ru'
 app.config['MAIL_PORT'] = 465
@@ -240,22 +240,6 @@ def yandex_authorized(resp):
     return redirect(url_for('user_profile'))
 
 
-@app.route('/join-team', methods=['POST'])
-def join_team():
-    team_code = request.form['code']
-    if team_code:
-        classroom_id = Classroom.query.filter(Classroom.code == team_code).first()
-        if classroom_id:
-            new_membership = Membership(user_id=current_user.get_id(), classroom_id=classroom_id.id, role='regular')
-            db.session.add(new_membership)
-            db.session.commit()
-            return jsonify({'result': {'id': classroom_id.id,
-                                       'name': classroom_id.name},
-                            'url_for_img': url_for('static', filename='imgs/' + classroom_id.image_file)})
-        return jsonify({'error': "given code has either expired or is not valid"})
-    return jsonify({'error': 'given code is invalid'})
-
-
 @app.route("/upload", methods=["POST"])
 @login_required
 def upload():
@@ -289,12 +273,6 @@ def user_profile():
     return render_template('profile.html', title='Профиль', user=current_user)
 
 
-@app.route("/app")
-@login_required
-def __app__():
-    return render_template("app.html", title='Application', user=current_user)
-
-
 @app.route("/edit-profile", methods=["GET", "POST"])
 @login_required
 def edit_profile():
@@ -323,16 +301,30 @@ def delete_profile():
     return jsonify(response)
 
 
+@app.route('/join-team', methods=['POST'])
+def join_team():
+    team_code = request.form['code']
+    if team_code:
+        classroom_id = Classroom.query.filter(Classroom.code == team_code).first()
+        if classroom_id:
+            new_membership = Membership(user_id=current_user.get_id(), classroom_id=classroom_id.id, role='regular')
+            db.session.add(new_membership)
+            db.session.commit()
+            return jsonify({'result': {'id': classroom_id.id,
+                                       'name': classroom_id.name},
+                            'url_for_img': url_for('static', filename='imgs/' + classroom_id.image_file)})
+        return jsonify({'error': "given code has either expired or is not valid"})
+    return jsonify({'error': 'given code is invalid'})
+
+
+@app.route("/app")
+@login_required
+def __app__():
+    return render_template("app.html", title='Application', user=current_user)
+
+
 @app.route('/app/chats', methods=['POST'])
 def app_chats():
-    # создается множество users, в котором будут храниться идентификаторы пользователей, связанные с сообщениями.
-    # Создается пустой список contacts, который будет содержать информацию о контактах.
-    # Выполняется запрос к базе данных, чтобы получить все сообщения, связанные с текущим пользователем (current_user.get_id()). Результат сохраняется в переменной messages.
-    # Для каждого сообщения в messages проверяется, является ли идентификатор отправителя или получателя текущим пользователем. Если нет, то идентификатор добавляется в множество users.
-    # Выполняется запрос к базе данных для получения информации о пользователях, идентификаторы которых находятся в множестве users. Результат сохраняется в переменной User.query.filter(User.id.in_(users)).all().
-    # Для каждого пользователя создается объект contact с атрибутами id и name, которые соответствуют идентификатору пользователя и его имени соответственно. Объект contact добавляется в список contacts.
-    # Возвращается результат вызова функции render_template, которая отображает шаблон chats.html с переданными аргументами title='Contacts', data=contacts и type='contact'.
-
     users, contacts = set(), []
     messages = DirectMessage.query.filter(
         (DirectMessage.receiver_id == current_user.get_id()) | (DirectMessage.sender_id == current_user.get_id())).all()
@@ -344,7 +336,6 @@ def app_chats():
         contact.name = user.username
         contacts.append(contact)
     return render_template('chats.html', title='Contacts', data=contacts, type='contact')
-
 
 @app.route('/add-contact', methods=['POST'])
 def add_contact():
@@ -358,42 +349,24 @@ def add_contact():
 
 @app.route('/retrieve-directmessages/<user_id>', methods=['POST'])
 def retrieve_directmessages(user_id):
-    # Обработчик принимает параметр user_id, который представляет идентификатор пользователя, с которым нужно извлечь директные сообщения.
-    # Выполняется запрос к базе данных для извлечения сообщений, удовлетворяющих следующим условиям:
-    # sender_id равен user_id, а receiver_id равен идентификатору текущего пользователя (current_user.get_id()).
-    # ИЛИ sender_id равен идентификатору текущего пользователя, а receiver_id равен user_id.
-    # Результат сохраняется в переменной messages.
-    # Создается словарь, содержащий ключ 'messages' и значение, которое представляет список словарей сообщений.
-    # Для каждого сообщения в messages создается словарь с ключами 'content', 'date', 'author' и 'mein', которые представляют содержимое сообщения, дату, имя автора и флаг, указывающий, является ли текущий пользователь автором сообщения.
-    # В словарь 'messages' добавляется созданный словарь для каждого сообщения в messages.
-    # Возвращается JSON-ответ с данными о сообщениях.
-    # Обработчик маршрута извлекает директные сообщения между заданным
-    # пользователем и текущим пользователем, и возвращает их в формате JSON.
-    # Каждое сообщение содержит информацию о содержимом, дате, авторе и флаге,
-    # указывающем, является ли текущий пользователь автором сообщения.
     messages = DirectMessage.query.filter(
-        (DirectMessage.sender_id == user_id) & (DirectMessage.receiver_id == current_user.get_id()) |
-        (DirectMessage.sender_id == current_user.get_id()) & (DirectMessage.receiver_id == user_id)
-    )
-    return jsonify({
-        'messages': [
-            {
-                'content': message.content,
-                'date': message.date,
-                'author': User.query.filter(User.id == message.sender_id).first().username,
-                'mein': int(current_user.get_id()) == message.sender_id
-            }
-            for message in messages
-        ]
-    })
+        (DirectMessage.sender_id == user_id) & (DirectMessage.receiver_id == current_user.get_id()) | (
+                    DirectMessage.sender_id == current_user.get_id()) & (DirectMessage.receiver_id == user_id))
+    return jsonify({'messages': [{'content': message.content, 'date': message.date,
+                                  'author': User.query.filter(User.id == message.sender_id).first().username,
+                                  'mein': int(current_user.get_id()) == (message.sender_id)} for message in messages]})
 
+
+'''
+@app.route('/retrieve-contacts', methods=['POST'])
+def retrieve_contacts():
+    pass'''
 
 @app.route('/app/classrooms', methods=['POST'])
 def app_classrooms():
     memberships = Membership.query.filter(Membership.user_id == current_user.get_id()).all()
     classrooms = Classroom.query.filter(Classroom.id.in_([membership.classroom_id for membership in memberships])).all()
     return render_template('classrooms.html', title='Classrooms', data=classrooms, type='classroom')
-
 
 @app.route('/add-note', methods=['POST'])
 def add_note():
@@ -463,7 +436,7 @@ def create_team():
         },
             'channel': new_channel.id
         })
-    return jsonify({'error': 'given name is invalid.'})  # Returning an error if the given name is empty
+    return jsonify({'error': 'given name is invalid.'})  #Returning an error if the given name is empty
 
 
 @app.route('/retrieve-notes/<channel>', methods=['POST'])
@@ -487,7 +460,6 @@ def retrieve_assignments(channel):
                                                                AssignmentSubmission.user_id == current_user.get_id()).first() is not None}
         for assignment in assignments]})
 
-
 @app.route('/add-assignment', methods=['POST'])
 def add_assignment():
     get_date = parser.parse(request.form['assignment_date'])
@@ -495,9 +467,7 @@ def add_assignment():
                                 assignment_text=request.form['assignment_text'], channel_id=request.form['channel_id'])
     db.session.add(new_assignment)
     db.session.commit()
-    return jsonify(
-        {'id': new_assignment.id, 'text': new_assignment.assignment_text, 'duedate': new_assignment.due_date})
-
+    return jsonify({'id': new_assignment.id, 'text': new_assignment.assignment_text, 'duedate': new_assignment.due_date})
 
 @app.route('/homework-submit', methods=['POST'])
 def homework_submit():
@@ -523,8 +493,7 @@ def retrieve_submissions(assignment_id):
 @app.route('/retrieve-channels/<classroom>', methods=['POST'])
 def retrieve_channels(classroom):
     channels = Channel.query.filter(classroom == Channel.classroom_id)
-    return jsonify({'result': [{'id': channel.id, 'name': channel.name} for channel in channels]})
-
+    return jsonify({'result': [{'id': channel.id, 'name': channel.name} for channel in channels ] })
 
 @app.route('/retrieve-messages/<channel>', methods=['POST'])
 def retrieve_messages(channel):
@@ -543,17 +512,14 @@ def retrieve_messages(channel):
                     # returning the last ten messages in this channel
                     })
 
-
 @app.route('/app/activity', methods=['POST'])
 def app_activity():
     messages = Message.query.filter(Message.author_id == current_user.get_id())
     return render_template('activity.html', data=messages)
 
-
 @app.route('/app/meetings', methods=['POST'])
 def app_meetings():
     return render_template('meetings.html')
-
 
 @app.route('/app/calls', methods=['POST'])
 def app_calls():

@@ -92,7 +92,7 @@
                             aria-label="Recipient's username" aria-describedby="basic-addon2"
                             name="note_text"></textarea>
 			      <input type="file" name=note_image class="btn btn-outline-secondary" value="Upload a picture"
-                         accept="image/*">
+						 accept="image/*">
 			      <input type=submit class="btn btn-outline-secondary">
 				</div>
 			</form>
@@ -101,51 +101,51 @@
 		  </div>
 		</div>
 	</span>
-    <div id="classroom_settings" class="overlay">
-        <a href="javascript:void(0)" class="closebtn" onclick="close_settings_menu()">&times;</a>
-        <div class="overlay-content">
-            <p><b>Classroom code:</b> <span id='code_id'>...</span></p>
-            <div style="text-align: center">
-                <button class='btn btn-primary' id='leave_classroom'>Leave classroom</button>
-                <button class='btn btn-primary permission' id='regenerate_code'>Regenerate code</button>
+	<div id="classroom_settings" class="overlay">
+		<a href="javascript:void(0)" class="closebtn" onclick="close_settings_menu()">&times;</a>
+		<div class="overlay-content">
+			<p><b>Classroom code:</b> <span id='code_id'>...</span></p>
+			<div style="text-align: center">
+				<button class='btn btn-primary' id='leave_classroom'>Leave classroom</button>
+				<button class='btn btn-primary permission' id='regenerate_code'>Regenerate code</button>
 
-            </div>
-            <hr class="permission">
-            <p class="action-title permission">Channels:</p>
-            <div class="action-container permission">
-                <label for=action_selection></label><select class="form-control" id=action_selection>
-                <option>action</option>
-                <option>rename</option>
-                <option>delete</option>
-                <option>add</option>
-            </select><br>
-                <label for=channel_selection></label><select class="form-control" id=channel_selection>
-                <option>none</option>
-            </select>
-                <br>
-                <label for='name_input'></label><input class='form-control' id='name_input' type='text'
-                                                       placeholder="Enter the name you wish to use"
-                                                       style='display:none;'>
-                <br>
-                <input id='channels_action_submission_button' type='button' value='submit action'
-                       class="btn btn-primary">
-            </div>
-            <hr class="permission">
-            <p class="action-title permission">Users:</p>
-            <div class="action-container permission">
-                <label for=action_selection_users></label><select class="form-control" id=action_selection_users>
-                <option>action</option>
-                <option>kick</option>
-            </select>
-                <br>
-                <label for=user_selection></label><select class="form-control" id=user_selection>
-                <option>none</option>
-            </select>
-                <br><input id='users_action_submission_button' type='button' value='submit action'
-                           class="btn btn-primary">
-            </div>
-        </div>
-    </div>
+			</div>
+			<hr class="permission">
+			<p class="action-title permission">Channels:</p>
+			<div class="action-container permission">
+				<label for=action_selection></label><select class="form-control" id=action_selection>
+				<option>action</option>
+				<option>rename</option>
+				<option>delete</option>
+				<option>add</option>
+			</select><br>
+				<label for=channel_selection></label><select class="form-control" id=channel_selection>
+				<option>none</option>
+			</select>
+				<br>
+				<label for='name_input'></label><input class='form-control' id='name_input' type='text'
+													   placeholder="Enter the name you wish to use"
+													   style='display:none;'>
+				<br>
+				<input id='channels_action_submission_button' type='button' value='submit action'
+					   class="btn btn-primary">
+			</div>
+			<hr class="permission">
+			<p class="action-title permission">Users:</p>
+			<div class="action-container permission">
+				<label for=action_selection_users></label><select class="form-control" id=action_selection_users>
+				<option>action</option>
+				<option>kick</option>
+			</select>
+				<br>
+				<label for=user_selection></label><select class="form-control" id=user_selection>
+				<option>none</option>
+			</select>
+				<br><input id='users_action_submission_button' type='button' value='submit action'
+						   class="btn btn-primary">
+			</div>
+		</div>
+	</div>
 </div>
 
 

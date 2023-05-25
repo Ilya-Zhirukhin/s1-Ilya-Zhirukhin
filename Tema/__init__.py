@@ -7,8 +7,8 @@ from os.path import join, dirname, realpath
 from flask import Flask, redirect, url_for, render_template
 from flask_dance.contrib.github import make_github_blueprint, github
 
-import eventlet
 
+import eventlet
 eventlet.monkey_patch()
 
 app = Flask(__name__, template_folder="templates")
@@ -35,6 +35,5 @@ login_manager.login_view = 'login'
 from Tema.routes import *
 from Tema.models import User
 from Tema.network import *
-
 with app.app_context():
     db.create_all()
