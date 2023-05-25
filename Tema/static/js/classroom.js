@@ -34,8 +34,6 @@ const add_note = (note_data, active) => {
     }
     note_container.append(`<div class="tab-pane ${active}" id="${id}" role="tabpanel">${additional_text}<p>${note_data.note_text}</p></div>`);
 }
-
-
 const add_assignment = (assignment_data, is_super) => {
     const assignment_list = $('#assignments-list');
     if (assignment_data.id) {
@@ -256,4 +254,69 @@ $(document).ready(function () {
             }
         });
     });
+});
+socket.on('channel_conversation', function (data) {
+    if (data.channel_id === selected_channel) {
+        console.log(data);
+        add_message(data);
+    } else {
+        //Code for notification goes here
+    }
+});
+socket.on('channel_delete', function (data) {
+    if (selected_channel === parseInt(data['id'], 10)) {
+        set_chat_title('', 'No channel to display...');
+        clear_notes();
+        clear_chatbox();
+    }
+    if (selected_classroom === data['classroom_id']) {
+        $(`[id='%${data['classroom_id']}']`).parent().children('ul').children().each(function () {
+            if ($(this).attr('id') === '$' + String(data['id'])) {
+                $(this).remove();
+                $('#channel_selection').children().each(function () {
+                    if ($(this).val() === parseInt(data['id'], 10)) {
+                        $(this).remove();
+                    }
+                });
+            }
+        })
+    }
+});
+socket.on('new_channel', function (data) {
+    if (selected_classroom === data['classroom_id']) {
+        $(`[id='%${data['classroom_id']}']`).parent().children('ul').append(`<li id="$${data['id']}" class='w3-bar-item w3-button' style='text-decoration: none; width:100%'><i class="fas fa-hashtag"></i>${data['name']}</li>`);
+        $('#channel_selection').append(`<option value='${data['id']}'>${data['name']}</option>`);
+    }
+});
+socket.on('channel_rename', function (data) {
+    if (selected_classroom === data['classroom_id']) {
+        $(`[id='%${data['classroom_id']}']`).parent().children('ul').children().each(function () {
+            if ($(this).attr('id') === '$' + String(data['id'])) {
+                $(this).html('<i class="fas fa-hashtag"></i>' + data['new_name']);
+            }
+        });
+        $('#channel_selection').children().each(function () {
+            if ($(this).val() === parseInt(data['id'], 10)) {
+                $(this).html(data['new_name']);
+            }
+        });
+    }
+});
+socket.on('code_regeneration', function (data) {
+    if (selected_classroom === data['classroom_id']) {
+        console.log(data)
+        $('#code_id').html(data['code']);
+        console.log(data)
+    }
+});
+socket.on('user_kick', function (data) {
+    console.log(data);
+    if (parseInt(data['user_id'], 10) === parseInt($('#user_id').attr('value'), 10)) {
+        $(`[id='%${data['classroom_id']}']`).parent().remove();
+        if (selected_classroom === data['classroom_id']) {
+            set_chat_title('', 'No channel to display...');
+            clear_notes();
+            clear_chatbox();
+        }
+    }
 });

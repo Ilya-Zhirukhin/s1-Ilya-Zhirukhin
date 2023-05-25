@@ -3,7 +3,7 @@ from flask_login import current_user
 from flask_socketio import SocketIO, emit, send, disconnect, join_room, leave_room
 from Tema import socketio
 from Tema.models import User, Classroom, Membership, Channel, Message, Note, DirectMessage
-# from Tema.utils import generate_code
+from Tema.utils import generate_code
 from Tema import db
 from datetime import datetime
 

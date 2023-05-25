@@ -5,7 +5,7 @@ from Tema import app, bcrypt, db, socketio
 from Tema.models import User, Classroom, Membership, Channel, Message, Note, Assignment, DirectMessage, \
     AssignmentSubmission
 from flask_login import login_user, current_user, logout_user, login_required
-# from Tema.utils import generate_code
+from Tema.utils import generate_code
 from werkzeug.utils import secure_filename
 from types import SimpleNamespace
 from dateutil import parser
