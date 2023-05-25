@@ -101,3 +101,159 @@ $(document).ready(function () {
             }
         });
     });
+    $(document).on('click', '.classroom i', function () {
+        $('#classroom_settings').css('width', '100%');
+        let id = parseInt($(this).parent().attr('id').slice(1, $(this).parent().attr('id').length), 10);
+        $.ajax({url: `classroom-settings/${id}`, type: 'POST'}).done(function (data) {
+            console.log(data);
+            $('#code_id').html(data['room_code']);
+            $('#channel_selection').html('<option value=-1>none</option>');
+            $('#user_selection').html('<option value=-1>none</option>');
+            for (let i = 0; i < data.channels.length; i++) {
+                $('#channel_selection').append(`<option value='${data.channels[i].id}'>${data.channels[i].name}</option>`);
+            }
+            for (let i = 0; i < data.members.length; i++) {
+                $('#user_selection').append(`<option value='${data.members[i].id}'>${data.members[i].name}</option>`);
+            }
+            if (data.permission) {
+                $('.permission').show();
+            } else {
+                $('.permission').hide();
+            }
+        });
+    });
+    $(document).on('click', '#channels_action_submission_button', function () {
+        channel_id = $('#channel_selection').children("option:selected").val();
+        socket.emit('channel_action', {
+            'classroom_id': selected_classroom,
+            'action': $('#action_selection').children("option:selected").html(),
+            'channel_id': channel_id,
+            'name_input': $('#name_input').val()
+        });
+    });
+    $(document).on('click', '#users_action_submission_button', function () {
+        user_id = $('#user_selection').children("option:selected").val();
+        socket.emit('user_action', {
+            'classroom_id': selected_classroom,
+            'action': $('#action_selection_users').children("option:selected").html(),
+            'user_id': user_id
+        });
+    });
+    $(document).on('change', '#action_selection', function () {
+        let selectedAction = $(this).children("option:selected").html();
+        if (selectedAction === 'rename' || selectedAction === 'add') {
+            console.log('selected action is rename');
+            $('#name_input').css('display', 'block');
+        } else {
+            $('#name_input').css('display', 'none');
+        }
+    });
+    $(document).on('click', '.channels li', function () {
+        let id = parseInt($(this).attr('id').slice(1, $(this).attr('id').length), 10); //getting channel id
+        selected_channel = id;
+        set_chat_title($(this).parent().parent().children('a').first().html(), $(this).html());
+        $.ajax({url: `retrieve-messages/${id}`, type: 'POST'}).done((data) => {
+            clear_chatbox()
+            if (data.result.length) {
+                for (let i = 0; i < data.result.length; i++) {
+                    add_message(data.result[i]);
+                }
+            } else {
+                let message = {'author': {'name': 'SC. Bot'}, 'content': 'No messages to display', 'date': 'just now'};
+                add_message(message);
+            }
+        });
+        $.ajax({url: `retrieve-notes/${id}`, type: 'POST'}).done((data) => {
+            clear_notes();
+            if (data.length) {
+                for (let i = 0; i < data.length; i++) {
+                    if (i === 0) {
+                        add_note(data[i], 'active');
+                    } else {
+                        add_note(data[i], '');
+                    }
+                }
+            } else {
+                new_note = {'note_title': 'No data', 'note_text': 'No data', 'note_id': -1};
+                add_note(new_note, 'active');
+            }
+        });
+        $.ajax({url: `retrieve-assignments/${id}`, type: 'POST'}).done((data) => {
+            console.log(data);
+            clear_assignments();
+            if (data.assignments.length) {
+
+                result = data.role === 'super';
+                for (let i = 0; i < data.assignments.length; i++) {
+                    add_assignment(data.assignments[i], result);
+                }
+            } else {
+                new_assignment = {'text': 'none', 'duedate': 'none', 'submission_state': '.'};
+                add_assignment(new_assignment);
+            }
+        });
+    });
+    $(document).on('click', '#newconversation', function () {
+        $('#new_conversation_form').css('display', 'block'); //showing new conversation form
+        $('#newconversation').css('display', 'none'); //hiding newconversation button
+    });
+    $(document).on('keydown', '#new_conversation_form', function (event) {
+        if (event.keyCode === 13) {
+            event.preventDefault(); //preventing form from submitting
+            const user_input = $('#new_conversation_input').val(); //assigning the input to a variable
+            $('#new_conversation_input').val(''); //setting input value to empty string
+            if (selected_channel != null) {
+                socket.emit('channel_conversation', {'channel_id': selected_channel, 'message': user_input});
+            }
+        }
+    });
+    $(document).on('click', '#regenerate_code', function () {
+        socket.emit('code_regeneration_req', {'classroom_id': selected_classroom});
+    });
+    $(document).on('click', '#leave_classroom', function () {
+        socket.emit('classroom_leave', {'classroom_id': selected_classroom});
+        set_chat_title('', 'No channel to display...');
+        clear_notes();
+        clear_chatbox();
+        close_settings_menu();
+        $(`[id='%${selected_classroom}']`).parent().remove();
+    });
+    $(document).on('submit', "#assignment_form", function (event) {
+        event.preventDefault();
+        $('#selected_channel_input').val(selected_channel);
+        $.ajax({
+            url: '/add-assignment', type: 'POST', data: $('#assignment_form').serialize(), success: function (data) {
+                add_assignment(data, true);
+            }
+        });
+    });
+    $(document).on('submit', '#homework_submission', function (event) {
+        event.preventDefault();
+        let form_data = new FormData($('#homework_submission')[0]);
+        form_data.append('channel_id', selected_channel);
+        form_data.append('assignment_id', parseInt($('#homework_submission').closest('tr').attr('value'), 10));
+        event.preventDefault();
+        if (selected_channel != null) {
+            $.ajax({
+                data: form_data,
+                contentType: false,
+                processData: false,
+                url: '/homework-submit',
+                method: 'POST'
+            }).done(function (data) {
+                $('#homework_submission').html('Already submitted');
+            });
+        }
+    });
+    $(document).on('click', '.show_submission_button', function () {
+        id = parseInt($(this).closest('tr').attr('value'), 10);
+        console.log(id);
+        $.ajax({url: `retrieve-submissions/${id}`, type: 'POST'}).done(function (data) {
+            clear_submissions();
+            $('#submissions').append('<tr><th>Username</th> <th>Homework File</th></tr>');
+            for (i = 0; i < data.length; i++) {
+                $('#submissions').append(`<tr><td>${data[i].name}</td><td><a href='${data[i].file}' download>Download submission file</a></td></tr>`);
+            }
+        });
+    });
+});
