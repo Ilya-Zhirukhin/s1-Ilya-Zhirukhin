@@ -4,8 +4,8 @@
 <style>
 
     .profile-avatar img {
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
         object-fit: cover; /* Подгоняет изображение в соответствии с заданными размерами */
         border-radius: 50%; /* Опционально: добавляет закругленные углы для круглого аватара */
     }
@@ -35,19 +35,18 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href='#' id='jointeambtn' onClick='toggle_class_join()'>Join a TIMA</a>
+            </li>
+
             <li class="nav-item">
-                <ul class="navbar-nav">
-                    <li>
-                        <div class="profile-avatar">
-                            <a href="{{ url_for('user_profile') }}" style="color: #e0e0e0">ACCOUNT</a>
-                            <a href="{{ url_for('user_profile') }}">
-                                <img id="profile-avatar-img"
-                                     src="{{ url_for('static', filename='imgs/' + user.image_file) }}"
-                                     alt="Аватар">
-                            </a>
-                        </div>
-                    </li>
-                </ul>
+                <div class="profile-avatar">
+                    <a href="{{ url_for('user_profile') }}" style="color: #e0e0e0">Account</a>
+                    <a href="{{ url_for('user_profile') }}">
+                        <img id="profile-avatar-img"
+                             src="{{ url_for('static', filename='imgs/' + user.image_file) }}"
+                             alt="Аватар">
+                    </a>
+                </div>
+            </li>
 
 
         </ul>
@@ -60,7 +59,7 @@
     <a class="w3-bar-item w3-button selected_item" name='activity' id=activity><img width=40
                                                                                     src="{{url_for('static', filename='imgs/notification-icon.png')}}"/>Activity</a>
     <a class="w3-bar-item w3-button" name='chats' id=chats><img width=40
-                                                                src="{{url_for('static', filename='imgs/chat-icon.png')}}"/>Chat</a>
+                                                                src="{{url_for('static', filename='imgs/chat-icon.png')}}"/></a>
     <a class="w3-bar-item w3-button" name='classrooms' id=classrooms><img width=40
                                                                           src="{{url_for('static', filename='imgs/connection.gif')}}"/>Rooms</a>
     <a class="w3-bar-item w3-button" name=meetings id=meetings><img width=40

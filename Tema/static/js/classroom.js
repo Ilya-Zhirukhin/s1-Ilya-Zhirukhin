@@ -34,3 +34,70 @@ const add_note = (note_data, active) => {
     }
     note_container.append(`<div class="tab-pane ${active}" id="${id}" role="tabpanel">${additional_text}<p>${note_data.note_text}</p></div>`);
 }
+
+
+const add_assignment = (assignment_data, is_super) => {
+    const assignment_list = $('#assignments-list');
+    if (assignment_data.id) {
+        if (is_super) {
+            assignment_list.append(`<tr value=${assignment_data.id}><td>${assignment_data.text}</td><td>${assignment_data.duedate}</td><td><button class='show_submission_button' data-target='#submissions'>View submissions</button> </td> </tr>`);
+        } else {
+            if (assignment_data.submission_state) {
+                assignment_list.append(`<tr value=${assignment_data.id}><td>${assignment_data.text}</td><td>${assignment_data.duedate}</td><td>Already submitted</td> </tr>`);
+            } else {
+                assignment_list.append(`<tr value=${assignment_data.id}><td>${assignment_data.text}</td><td>${assignment_data.duedate}</td><td><form id='homework_submission'><input type=file name=homework><button>submit</button></form></td></tr>`);
+
+            }
+        }
+    }
+}
+const clear_assignments = () => {
+    const assignment_list = $('#assignments-list');
+    assignment_list.html('');
+}
+const toggle_submissions_menu = () => {
+    $('#testest').css('display', 'block');
+}
+$(document).ready(function () {
+    $('body').click(function (e) {
+        var target = $(e.target);
+        if (!target.is('#new_conversation_form') && !target.is('#new_conversation_form input')) {
+            is_visible = $('#new_conversation_form').css('display');
+            if (is_visible !== 'none') {
+                $('#new_conversation_form').css('display', 'none');
+                $('#newconversation').css('display', 'block');
+            }
+        }
+    });
+    $(document).on('submit', '#note_form', function (event) {
+        let form_data = new FormData($('#note_form')[0]);
+        form_data.append('channel_id', selected_channel);
+        event.preventDefault();
+        if (selected_channel != null) {
+            $.ajax({
+                data: form_data,
+                contentType: false,
+                processData: false,
+                url: 'add-note',
+                method: 'POST'
+            }).done(function (data) {
+                $("#note_form").trigger("reset");
+                add_note(data['new_note'], '');
+            });
+        }
+    });
+    $(document).on('click', '#menulist .classroom', function () {
+        let id = parseInt($(this).attr('id').slice(1, $(this).attr('id').length), 10);
+        selected_classroom = id;
+        $.ajax({url: `retrieve-channels/${id}`, type: 'POST'}).done((data) => {
+            console.log(data);
+            if (data['result'].length > 0) {
+                let result = '';
+                for (let i = 0; i < data['result'].length; i++) {
+                    result += `<li id="$${data['result'][i].id}" class='w3-bar-item w3-button' style='text-decoration: none; width:100%'><i class="fas fa-hashtag"></i>${data['result'][i].name}</li>`;
+                }
+                $('#menulist ul').html('');
+                $(this).parent().children('.channels').first().html(result);
+            }
+        });
+    });
