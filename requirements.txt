@@ -19,5 +19,5 @@ Flask-OAuthlib
 eventlet
 flask_mail
 pytest
-
+docker-compose
 flask_testing

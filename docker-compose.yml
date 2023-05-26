@@ -1,0 +1,9 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "3778:3778"
+    environment:
+      - FLASK_ENV=development
+    command: python -m flask run --host=127.43.41.41 --port=3778

@@ -362,6 +362,42 @@ def retrieve_directmessages(user_id):
 def retrieve_contacts():
     pass'''
 
+@app.route('/json_route')
+def json_route():
+    data = {
+        'user': {
+            'name': 'John Doe',
+            'age': 30,
+            'email': 'johndoe@example.com',
+            'address': {
+                'street': '123 Main Street',
+                'city': 'New York',
+                'state': 'NY',
+                'country': 'USA'
+            },
+            'interests': ['programming', 'reading', 'traveling'],
+            'projects': [
+                {
+                    'title': 'Project A',
+                    'description': 'Lorem ipsum dolor sit amet.',
+                    'status': 'in progress'
+                },
+                {
+                    'title': 'Project B',
+                    'description': 'Consectetur adipiscing elit.',
+                    'status': 'completed'
+                },
+                {
+                    'title': 'Project C',
+                    'description': 'Nulla eu mi ut erat fringilla elementum.',
+                    'status': 'planned'
+                }
+            ]
+        }
+    }  # Замените этот пример на свои данные
+    return jsonify(data)
+
+
 @app.route('/app/classrooms', methods=['POST'])
 def app_classrooms():
     memberships = Membership.query.filter(Membership.user_id == current_user.get_id()).all()
