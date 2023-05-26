@@ -229,12 +229,7 @@
 
         // Загружаем содержимое формы редактирования профиля с помощью AJAX запроса
         var xhr = new XMLHttpRequest();
-        xhr.open('GET',
-            '{{ url_for('
-        edit_profile
-        ') }}'
-    )
-        ;
+        xhr.open('GET', `{{ url_for('edit_profile') }}`);
 
 
         xhr.onload = function () {
@@ -258,11 +253,7 @@
 
             // Отправляем данные формы на сервер с помощью AJAX запроса
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '{{ url_for('
-            edit_profile
-            ') }}'
-        )
-            ;
+            xhr.open('POST', `{{ url_for('edit_profile') }}`);
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
@@ -290,11 +281,7 @@
             // Создаем новый AJAX-запрос
             var xhr = new XMLHttpRequest();
             xhr.open(
-                'POST', '{{ url_for('
-            delete_profile
-            ') }}', true
-        )
-            ;
+                'POST', `{{ url_for('delete_profile') }}`, true);
 
 
             xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -304,9 +291,7 @@
                     var response = JSON.parse(xhr.responseText);
                     if (response.success) {
                         // Профиль успешно удален, перенаправляем пользователя на страницу регистрации
-                        window.location.href = '{{ url_for('
-                        register
-                        ') }}';
+                        window.location.href = `{{ url_for('register') }}`;
 
                     } else {
                         // Произошла ошибка при удалении профиля, выводим сообщение об ошибке
