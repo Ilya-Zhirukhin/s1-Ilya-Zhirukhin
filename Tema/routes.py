@@ -14,7 +14,6 @@ from flask_dance.contrib.github import make_github_blueprint, github
 from flask_oauthlib.client import OAuth
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
-
 from flask import render_template
 from flask_login import current_user
 from Tema.models import *
@@ -25,9 +24,8 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = 'for_semestr_work@mail.ru'
 app.config['MAIL_PASSWORD'] = '4UyJ8bda8KgvyC27xZAi'
-# RZHI1u1taet^
 app.config['MAIL_DEFAULT_SENDER'] = 'for_semestr_work@mail.ru'
-app.config['MAIL_USE_MANAGEMENT_COMMANDS'] = True  # Включение поддержки асинхронной отправки
+app.config['MAIL_USE_MANAGEMENT_COMMANDS'] = True
 
 mail = Mail(app)
 serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -36,27 +34,50 @@ serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 @app.route("/")
 @app.route("/home")
 def home():
+    """
+    Отображает главную страницу.
+
+    Returns:
+        Возвращает шаблон home.html с заголовком 'Home Page'.
+    """
     return render_template("home.html", title='Home Page')
 
 
-@app.route("/register", methods=["GET", "POST"])  # Make sure the form tag has the method, "POST"
+@app.route("/register", methods=["GET", "POST"])
 def register():
+    """
+    Регистрация нового пользователя.
+
+    Returns:
+        Если пользователь уже аутентифицирован, перенаправляет на страницу '__app__'.
+        Если форма заполнена корректно, добавляет нового пользователя в базу данных и перенаправляет на страницу 'login'.
+        Возвращает шаблон register.html с формой регистрации и заголовком 'Register'.
+    """
     if current_user.is_authenticated:
         return redirect(url_for("__app__"))
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")  # Hash the password
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
         new_user = User(first_name=form.name.data, last_name=form.last_name.data, username=form.username.data,
                         email=form.email.data, status=form.student_or_teacher.data, password=hashed_password)
-        db.session.add(new_user)  # Add the new user to the database queue
-        db.session.commit()  # Commit all the changes in the queue
+        db.session.add(new_user)
+        db.session.commit()
         return redirect(url_for('login'))
     return render_template("register.html", form=form, title='Register')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Аутентификация пользователя.
+
+    Returns:
+        Если пользователь уже аутентифицирован, перенаправляет на страницу 'home'.
+        Если форма заполнена корректно, аутентифицирует пользователя и перенаправляет на следующую страницу,
+        сохраненную в параметре 'next'.
+        Возвращает шаблон login.html с формой входа и заголовком 'Login'.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('home'))
 
@@ -71,7 +92,6 @@ def login():
         else:
             flash('Login unsuccessful, please try again.', 'error')
 
-    # Create GitHub OAuth URL for login with GitHub
     github_login_url = url_for('login_github')
 
     return render_template('login.html', form=form, title='Login', github_login_url=github_login_url)
@@ -79,6 +99,13 @@ def login():
 
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
+    """
+    Сброс пароля пользователя.
+
+    Returns:
+        Если форма заполнена корректно, отправляет письмо на указанный адрес электронной почты с инструкциями по сбросу пароля.
+        Возвращает шаблон reset_password.html с формой сброса пароля и заголовком 'Сброс пароля'.
+    """
     form = ResetPasswordForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -88,7 +115,7 @@ def reset_password():
             reset_link = url_for('confirm_reset_password', token=token, _external=True)
             message = Message('Сброс пароля', recipients=[email])
             message.body = f'Для сброса пароля пройдите по ссылке: {reset_link}'
-            mail.send(message)  # Отправка асинхронного письма
+            mail.send(message)
             flash('Инструкции по сбросу пароля были отправлены на вашу почту.', 'info')
             return redirect(url_for('login'))
         flash('Адрес электронной почты не найден.', 'error')
@@ -97,14 +124,22 @@ def reset_password():
 
 @app.route('/confirm_reset_password/<token>', methods=['GET', 'POST'])
 def confirm_reset_password(token):
+    """
+    Подтверждение сброса пароля.
+
+    Args:
+        token (str): Токен для сброса пароля.
+
+    Returns:
+        Если форма заполнена корректно и пользователь существует, обновляет пароль пользователя и перенаправляет на страницу 'login'.
+        Возвращает шаблон confirm_reset_password.html с формой подтверждения сброса пароля и заголовком 'Подтверждение сброса пароля'.
+    """
     form = ResetPasswordForm_2()
     if form.validate_on_submit():
         email = serializer.loads(token, salt='reset-password', max_age=3600)
         user = User.query.filter_by(email=email).first()
         if user:
-            # Обновление пароля пользователя
-            user.password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")  # Hash the password
-
+            user.password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
             db.session.commit()
             flash('Пароль успешно изменен.', 'success')
             return redirect(url_for('login'))
